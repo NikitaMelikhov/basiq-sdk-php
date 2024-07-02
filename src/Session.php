@@ -2,35 +2,33 @@
 
 namespace Basiq;
 
-use GuzzleHttp\Client;
-use Basiq\Utilities\ResponseParser;
 use Basiq\Services\UserService;
+use Basiq\Utilities\ResponseParser;
+use GuzzleHttp\Client;
 
-class Session {
-
+class Session
+{
     private $apiKey;
-
     private $accessToken;
-
     public $apiClient;
-
     private $sessionTimestamp;
-
-    private $tokenValidity; 
-    
+    private $tokenValidity;
     private $apiVersion;
 
-    public function __construct($apiKey, $apiVersion="1.0") {
-        $this->apiClient = new Client([
-            // Base URI is used with relative requests
-            'base_uri' => 'http://au-api.basiq.io',
-            // You can set any number of default request options.
-            "headers" => [
-                "Content-Type" => "application/json"
-            ],
-            'timeout'  => 30.0,
-            "http_errors" => false
-        ]);
+    public function __construct($apiKey, $apiVersion = "1.0")
+    {
+        $this->apiClient = new Client(
+            [
+                // Base URI is used with relative requests
+                'base_uri'    => 'https://au-api.basiq.io',
+                // You can set any number of default request options.
+                "headers"     => [
+                    "Content-Type" => "application/json",
+                ],
+                'timeout'     => 30.0,
+                "http_errors" => false,
+            ]
+        );
 
         $this->tokenValidity = 3600;
         $this->apiKey = $apiKey;
@@ -38,26 +36,27 @@ class Session {
         $this->accessToken = $this->getAccessToken();
     }
 
-    public function getApiVersion() {
+    public function getApiVersion()
+    {
         return $this->apiVersion;
     }
- 
-    public function getAccessToken()
+
+    public function getAccessToken(string $userId = null)
     {
-        if (time() - $this->sessionTimestamp < $this->tokenValidity) {
+        if (!$userId && time() - $this->sessionTimestamp < $this->tokenValidity) {
             return $this->accessToken;
         }
 
-        if ($this->apiVersion != "2.0" && $this->apiVersion != "1.0") {
-            error_log("Given version isn't supported");
-        }
-
         $response = $this->apiClient->post("/token", [
-            "headers" => [
-                "Content-type" => "application/json",
-                "Authorization" => "Basic ".$this->apiKey,
-                "basiq-version" => $this->apiVersion
-            ]
+            "headers"     => [
+                "Content-type"  => "application/json",
+                "Authorization" => "Basic " . $this->apiKey,
+                "basiq-version" => $this->apiVersion,
+                'userId'        => $userId ?? null,
+            ],
+            'form_params' => [
+                'scope' => 'SERVER_ACCESS',
+            ],
         ]);
 
         // ADD LOGIC TO CHECK FOR VALID RESPONSE
@@ -65,7 +64,10 @@ class Session {
         $this->sessionTimestamp = time();
 
         $body = ResponseParser::parse($response);
-        $this->tokenValidity = $body["expires_in"];
+
+        if (!$userId) {
+            $this->tokenValidity = $body["expires_in"];
+        }
 
         return $body["access_token"];
     }
@@ -74,8 +76,8 @@ class Session {
     {
         $response = $this->apiClient->get("/institutions", [
             "headers" => [
-                "Authorization" => "Bearer ".$this->getAccessToken()
-            ]
+                "Authorization" => "Bearer " . $this->getAccessToken(),
+            ],
         ]);
 
         return ResponseParser::parse($response);
@@ -85,8 +87,8 @@ class Session {
     {
         $response = $this->apiClient->get("/institutions/" . $id, [
             "headers" => [
-                "Authorization" => "Bearer ".$this->getAccessToken()
-            ]
+                "Authorization" => "Bearer " . $this->getAccessToken(),
+            ],
         ]);
 
         return ResponseParser::parse($response);
@@ -102,4 +104,14 @@ class Session {
         return (new UserService($this))->forUser($id);
     }
 
+    public function getEvent(string $eventId)
+    {
+        $response = $this->apiClient->get("/events/" . $eventId, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->getAccessToken(),
+            ],
+        ]);
+
+        return ResponseParser::parse($response);
+    }
 }

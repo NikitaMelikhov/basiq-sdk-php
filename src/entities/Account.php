@@ -2,7 +2,8 @@
 
 namespace Basiq\Entities;
 
-class Account extends Entity {
+class Account extends Entity
+{
 
     public $id;
     public $accountNo;
@@ -15,6 +16,8 @@ class Account extends Entity {
     public $institution;
     public $connection;
     public $status;
+    public $meta;
+    public ?string $accountHolder;
 
     public function __construct($data)
     {
@@ -29,6 +32,7 @@ class Account extends Entity {
         $this->institution = $data["institution"];
         $this->connection = $data["connection"];
         $this->status = $data["status"];
+        $this->meta = $data["meta"];
+        $this->accountHolder = $data['accountHolder'];
     }
-
 }

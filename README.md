@@ -1,14 +1,6 @@
-
-
 # Basiq.io PHP SDK
 
-# PLEASE NOTE THIS SDK IS DEPRECATED. 
-
-## We are working hard behind the scenes to produce reliable and up to date SDK's for our customers. 
-
-In the meantime, if you are interested in generating your own, you can access our full Open API/Swagger spec [here](https://github.com/basiqio/basiq-open-api-spec). 
-
-~~This is the documentation for the PHP SDK for Basiq.io API~~
+This is the documentation for the PHP SDK for Basiq.io API
 
 ## Introduction
 

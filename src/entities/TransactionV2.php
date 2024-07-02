@@ -2,7 +2,8 @@
 
 namespace Basiq\Entities;
 
-class TransactionV2 extends Entity {
+class TransactionV2 extends Entity
+{
 
     public $id;
     public $type;
@@ -18,7 +19,7 @@ class TransactionV2 extends Entity {
     public $transactionDate;
     public $direction;
     public $subclass;
-  
+
     public function __construct($data)
     {
         $this->id = $data["id"];
@@ -36,5 +37,4 @@ class TransactionV2 extends Entity {
         $this->direction = $data["direction"];
         $this->subclass = $data["subClass"];
     }
-
 }

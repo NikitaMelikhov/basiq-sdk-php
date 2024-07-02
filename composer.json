@@ -1,7 +1,7 @@
 {
     "name": "basiqio/basiq-sdk-php",
     "require": {
-        "guzzlehttp/guzzle": "^7.0.1"
+        "guzzlehttp/guzzle": "^7.0"
     },
     "description": "PHP SDK for Basiq.io API",
     "keywords": ["basiq","finance","api","sdk"],

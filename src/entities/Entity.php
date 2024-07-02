@@ -2,10 +2,8 @@
 
 namespace Basiq\Entities;
 
-class Entity {
+class Entity
+{
 
     public $id;
-
-    
-
 }

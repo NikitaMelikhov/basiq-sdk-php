@@ -2,10 +2,11 @@
 
 namespace Basiq\Entities;
 
-use \Basiq\Services\UserService;
-use \Basiq\Services\ConnectionService;
+use Basiq\Services\ConnectionService;
+use Basiq\Services\UserService;
 
-class User extends Entity {
+class User extends Entity
+{
 
     public $email;
     public $mobile;
@@ -41,6 +42,7 @@ class User extends Entity {
      * @param $password
      * @param string|null $securityCode
      * @param string|null $secondaryLoginId
+     *
      * @return Job|void
      */
     public function createConnection($institutionId, $userId, $password, $securityCode = null, $secondaryLoginId = null)
@@ -58,12 +60,6 @@ class User extends Entity {
 
     public function getAllConnections()
     {
-        if ($this->connections && count($this->connections) > 0) {
-            return array_map(function ($value) {
-                return new Connection($this->connectionService, $this, $value);
-            }, $this->connections);
-        }
-
         return $this->userService->getAllConnections($this->connectionService, $this);
     }
 

@@ -4,15 +4,15 @@ namespace Basiq\Entities;
 
 use Basiq\Services\ConnectionService;
 
-class Job extends Entity {
+class Job extends Entity
+{
 
-    private $service;
-    
     public $id;
     public $created;
     public $updated;
     public $steps;
     public $links;
+    private $service;
 
     public function __construct(ConnectionService $service, $data)
     {
