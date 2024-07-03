@@ -19,10 +19,10 @@ class Connection extends Entity
     {
         $this->id = $data['id'];
         $this->status = isset($data['status']) ? (string)$data['status'] : null;
-        $this->lastUsed = isset($data['lastUsed']) ? new \DateTime($data['lastUsed']) : null;
+        $this->lastUsed = isset($data['lastUsed']) && $data['lastUsed'] ? new \DateTime($data['lastUsed']) : null;
         $this->institution = isset($data['institution']) ? $data['institution'] : null;
         $this->accounts = isset($data['accounts']) ? (array)$data['accounts'] : [];
-        $this->expiryDate = isset($data['expiryDate']) ? new DateTimeImmutable($data['expiryDate']) : null;
+        $this->expiryDate = isset($data['expiryDate']) && $data['expiryDate'] ? new DateTimeImmutable($data['expiryDate']) : null;
 
         $this->user = $user;
         $this->connectionService = $service;
