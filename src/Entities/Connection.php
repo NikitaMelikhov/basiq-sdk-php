@@ -12,10 +12,10 @@ class Connection extends Entity
     public $institution;
     public $accounts;
     public ?DateTimeImmutable $expiryDate = null;
-    private $service;
-    private $user;
+    public $user;
+    private $connectionService;
 
-    public function __construct(ConnectionService $service, $user, $data)
+    public function __construct(ConnectionService $connectionService, $user, $data)
     {
         $this->id = $data['id'];
         $this->status = isset($data['status']) ? (string)$data['status'] : null;
@@ -25,7 +25,7 @@ class Connection extends Entity
         $this->expiryDate = isset($data['expiryDate']) && $data['expiryDate'] ? new DateTimeImmutable($data['expiryDate']) : null;
 
         $this->user = $user;
-        $this->connectionService = $service;
+        $this->connectionService = $connectionService;
     }
 
     public function update($data)
