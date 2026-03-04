@@ -30,7 +30,9 @@ class Session
             ]
         );
 
-        $this->tokenValidity = 3600;
+        // the actual expiration time of the token is 3600,
+        // but we have deliberately shortened it to avoid waiting for its invalidation
+        $this->tokenValidity = 3540;
         $this->apiKey = $apiKey;
         $this->apiVersion = $apiVersion;
         $this->accessToken = $this->getAccessToken();
