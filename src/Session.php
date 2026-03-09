@@ -9,7 +9,7 @@ use GuzzleHttp\Client;
 class Session
 {
     private $apiKey;
-    private $accessToken;
+    private $accessToken = null;
     public $apiClient;
     private $sessionTimestamp;
     private $tokenValidity;
@@ -17,22 +17,18 @@ class Session
 
     public function __construct($apiKey, $apiVersion = "1.0")
     {
-        $this->apiClient = new Client(
-            [
-                // Base URI is used with relative requests
-                'base_uri'    => 'https://au-api.basiq.io',
-                // You can set any number of default request options.
-                "headers"     => [
-                    "Content-Type" => "application/json",
-                ],
-                'timeout'     => 30.0,
-                "http_errors" => false,
-            ]
-        );
+        $this->apiClient = new Client([
+            // Base URI is used with relative requests
+            'base_uri'    => 'https://au-api.basiq.io',
+            // You can set any number of default request options.
+            "headers"     => [
+                "Content-Type" => "application/json",
+            ],
+            'timeout'     => 30.0,
+            "http_errors" => false,
+        ]);
 
-        // the actual expiration time of the token is 3600,
-        // but we have deliberately shortened it to avoid waiting for its invalidation
-        $this->tokenValidity = 3540;
+        $this->tokenValidity = 3600;
         $this->apiKey = $apiKey;
         $this->apiVersion = $apiVersion;
         $this->accessToken = $this->getAccessToken();
@@ -43,35 +39,34 @@ class Session
         return $this->apiVersion;
     }
 
-    public function getAccessToken(string $userId = null)
+    public function getAccessToken()
     {
-        if (!$userId && time() - $this->sessionTimestamp < $this->tokenValidity) {
+        if ($this->accessToken && (time() - $this->sessionTimestamp < $this->tokenValidity)) {
             return $this->accessToken;
         }
 
+        $this->refreshAccessToken();
+
+        return $this->accessToken;
+    }
+
+    public function refreshAccessToken(string $userId = null)
+    {
+        $this->sessionTimestamp = time();
         $response = $this->apiClient->post("/token", [
             "headers"     => [
                 "Content-type"  => "application/json",
                 "Authorization" => "Basic " . $this->apiKey,
                 "basiq-version" => $this->apiVersion,
-                'userId'        => $userId ?? null,
             ],
             'form_params' => [
                 'scope' => 'SERVER_ACCESS',
             ],
         ]);
 
-        // ADD LOGIC TO CHECK FOR VALID RESPONSE
-
-        $this->sessionTimestamp = time();
-
         $body = ResponseParser::parse($response);
-
-        if (!$userId) {
-            $this->tokenValidity = $body["expires_in"];
-        }
-
-        return $body["access_token"];
+        $this->tokenValidity = $body["expires_in"];
+        $this->accessToken = $body["access_token"];
     }
 
     public function getInstitutions()
