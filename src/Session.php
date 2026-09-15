@@ -80,6 +80,17 @@ class Session
         return ResponseParser::parse($response);
     }
 
+    public function getConnectors()
+    {
+        $response = $this->apiClient->get("/connectors", [
+            "headers" => [
+                "Authorization" => "Bearer " . $this->getAccessToken(),
+            ],
+        ]);
+
+        return ResponseParser::parse($response);
+    }
+
     public function getInstitution($id)
     {
         $response = $this->apiClient->get("/institutions/" . $id, [
